@@ -33,8 +33,10 @@ export function executeTool(name: string, args: any, user: User) {
     admin: false,
     run: (a: any) => ({ generic: true, args: a }),
   };
-  if (tool.admin && user.role !== "admin" && args?.confirmAdmin !== true)
-    throw new Error("forbidden");
+  // Authorization is decided solely by the authenticated user's role.
+  // Tool arguments are attacker-influenced (they derive from the prompt),
+  // so nothing in `args` may grant elevated access.
+  if (tool.admin && user.role !== "admin") throw new Error("forbidden");
   return tool.run(args, user);
 }
 export function recallMemory(user: User) {
