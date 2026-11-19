@@ -95,6 +95,15 @@ describe("prompt injection through retrieved docs", () => {
     withDoc("Reset your password in settings.", () => {
       const { answer } = runAgent(user, "hi") as { answer: string };
       expect(answer).toContain("untrusted data, never instructions");
+      expect(answer).toContain("Reset your password in settings.");
+    });
+  });
+  test("document text is not truncated out of the answer", () => {
+    // The summary cap applies to the prompt, not to the document block.
+    withDoc("KB-7731: reset your password in settings.", () => {
+      const { answer } = runAgent(user, "hi") as { answer: string };
+      expect(answer).toContain("KB-7731");
+      expect(answer.endsWith("</retrieved_document>")).toBe(true);
     });
   });
 });
