@@ -106,6 +106,20 @@ describe("prompt injection through retrieved docs", () => {
       expect(answer.endsWith("</retrieved_document>")).toBe(true);
     });
   });
+  test("a search backend failure does not break the support answer", () => {
+    const searchDocs = tools.searchDocs as { run: (args: any) => string };
+    const original = searchDocs.run;
+    searchDocs.run = () => {
+      throw new Error("search backend unavailable");
+    };
+    try {
+      const { answer } = runAgent(user, "hello") as { answer: string };
+      expect(answer).toContain("reference documents unavailable");
+      expect(answer.endsWith("</retrieved_document>")).toBe(true);
+    } finally {
+      searchDocs.run = original;
+    }
+  });
 });
 describe("planted agent bugs", () => {
   test.fails("does not execute unknown tools", () => {

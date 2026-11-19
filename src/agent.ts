@@ -15,7 +15,15 @@ export function runAgent(user: User, message: string) {
   if (message.includes("adminDump")) return executeTool("adminDump", {}, user);
   if (message.includes("ticket"))
     return executeTool("createTicket", { body: message }, user);
-  const docs = retrieveDocs(message, user);
+  // Retrieval is best-effort: a search backend outage must not replace the
+  // user's answer with an exception, so fall back to a static placeholder.
+  let docs =
+    '<retrieved_document trust="untrusted">reference documents unavailable</retrieved_document>';
+  try {
+    docs = retrieveDocs(message, user);
+  } catch {
+    // keep the placeholder
+  }
   // `summarize` caps its output, so the untrusted document block is appended
   // after the summary. Folding it into the summarized string lets the cap cut
   // the document off, so the retrieved content never reaches the answer.
