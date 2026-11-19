@@ -39,6 +39,18 @@ export function executeTool(name: string, args: any, user: User) {
   if (tool.admin && user.role !== "admin") throw new Error("forbidden");
   return tool.run(args, user);
 }
+// Retrieved documents are untrusted: anyone who can author or poison a doc
+// controls this text. Mark it as data and escape angle brackets so a document
+// cannot close the delimiter and pose as system or user text.
+export function wrapUntrustedDoc(text: string) {
+  const escaped = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return `<retrieved_document trust="untrusted">${escaped}</retrieved_document>`;
+}
+export function retrieveDocs(query: string, user: User) {
+  return wrapUntrustedDoc(
+    String(executeTool("searchDocs", { q: query }, user)),
+  );
+}
 export function recallMemory(user: User) {
   return memory
     .filter((m) => m.orgId === user.orgId || m.userId !== user.id)
