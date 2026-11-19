@@ -30,11 +30,11 @@ Requirements:
 
 ## Acceptance Criteria
 
-- [ ] The issue is fixed
-- [ ] Relevant tests are added or updated
-- [ ] Existing behavior is preserved
-- [ ] No unrelated refactors
-- [ ] The PR description explains the approach
+- [x] The issue is fixed
+- [x] Relevant tests are added or updated
+- [x] Existing behavior is preserved
+- [x] No unrelated refactors
+- [x] The PR description explains the approach
 - [ ] Autter review passes
 
 ## What Autter Should Review
